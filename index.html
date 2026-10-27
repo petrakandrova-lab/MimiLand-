@@ -3,25 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mimiland - Originálne plienkové torty</title>
+    <title>Mimiland - Konfigurátor plienkových tort</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; }
     </style>
 </head>
-<body class="bg-pink-50 text-gray-800">
-    <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-pink-600">🍼 Mimiland</h1>
-            <span class="text-sm bg-pink-100 text-pink-700 px-3 py-1 rounded-full font-medium">Ručná výroba s láskou</span>
+<body class="bg-pink-50 text-gray-800 min-h-screen p-4">
+    <div class="max-w-xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden my-6">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-pink-400 to-rose-400 p-6 text-white text-center">
+            <h1 class="text-3xl font-bold mb-1">Mimiland 🍼</h1>
+            <p class="text-pink-100 text-sm">Navrhnite si vlastnú plienkovú tortu na mieru</p>
         </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 py-8">
-        <!-- Hero Section -->
-        <section class="text-center mb-10">
-            <h2 class="text-3xl font-bold text-gray-900 mb-3">Vytvorte si vlastnú plienkovú tortu</h2>
-            <p class="text-gray-600">Navrhnite jedinečný a praktický darček pre bábätko alebo mami
+        <!-- Konfigurátor -->
+        <div class="p-6 space-y-6">
+            <!-- 1. Výber veľkosti -->
+            <div>
+                <label class="block font-semibold text-gray-700 mb-2">1. Vyberte veľkosť torty:</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <button type="button" onclick="setSize('Malá (1 poschodie)', 25)" class="size-btn p-3 border-2 border-pink-200 rounded-xl text-center hover:border-pink-500 focus:outline-none transition font-medium text-sm">Malá<br><span class="text-xs text-gray-500">25 €</span></button>
+                    <button type="button" onclick="setSize('Stredná (2 poschodia)', 40)" class="size-btn p-3 border-2 border-pink-500 bg-pink-50 rounded-xl text-center focus:outline-none transition font-medium text-sm">Stredná<br><span class="text-xs text-gray-500">40 €</span></button>
+                    <button type="button" onclick="setSize('Veľká (3 poschodia)', 60)" class="size-btn p-3 border-2 border-pink-200 rounded-xl text-center hover:border-pink-500 focus:outline-none transition font-medium text-sm">Veľká<br><span class="text-xs text-gray-500">60 €</span></button>
+                </div>
+            </div>
+
+            <!-- 2. Farba stuhy -->
+            <div>
+                <label class="block font-semibold text-gray-700 mb-2">2. Farba stuhy a detailov:</label>
+                <select id="colorSelect" onchange="updateSummary()" class="w-full p-3 border-2 border-pink-200 rounded-xl focus:border-pink-500 focus:outline-none bg-white">
+                    <option value="Jemne ružová">🎀 Jemne ružová</option>
+                    <option value="Nebeská modrá">🦕 Nebeská modrá</option>
+                    <option value="Minitrovská mätová">🌿 Mätová / Unisex</option>
+                    <option value="Béžová / Natural">🧸 Béžová (Natural)</option>
+                </select>
+            </div>
+
+            <!-- 3. Doplnky -->
+            <div>
+                <label class="block font-semibold text-gray-700 mb-2">3. Voliteľné doplnky (+5 € / ks):</label>
+                <div class="space-y-2">
+                    <label class="flex items-center space-x-3 p-3 border border-gray-100 rounded-xl bg-gray-50 cursor-pointer">
+                        <input type="checkbox" id="addToy" onchange="updateSummary()" class="w-5 h-5 text-pink-500 rounded focus:ring-pink-400">
+                        <span class="text-sm font-medium">Plyšová hračka na vrchol torty</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-3 border border-gray-100 rounded-xl bg-gray-50 cursor-pointer">
+                        <input type="checkbox" id="addSocks" onchange="updateSummary()" class="w-5 h-5 text-pink-500 rounded focus:ring-pink-400">
+                        <span class="text-sm font-medium">Detské ponožkové kvetinky</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Zhrnutie a cena -->
+            <div class="bg-pink-50 rounded-2xl p-5 border border-pink-100 space-y-3">
+                <div class="flex justify-between items-center text-lg font-bold">
+                    <span>Celková cena:</span>
+                    <span id="totalPrice" class="text-pink-600 text-2xl">40 €</span>
+                </div>
+                <button onclick="alert('Ďakujem! Vaša objednávka/návrh bola úspešne pripravená.')" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 rounded-xl transition shadow-md">
+                    Odoslať nezáväzný dopyt 💌
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSizeName = 'Stredná (2 poschodia)';
+        let currentSizePrice = 40;
+
+        function setSize(name, price) {
+            currentSizeName = name;
+            currentSizePrice = price;
+            
+            // Označenie aktívneho tlačidla
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.remove('border-pink-500', 'bg-pink-50');
+                btn.classList.add('border-pink-200');
+            });
+            event.currentTarget.classList.remove('border-pink-200');
+            event.currentTarget.classList.add('border-pink-500', 'bg-pink-50');
+
+            updateSummary();
+        }
+
+        function updateSummary() {
+            let total = currentSizePrice;
+            if (document.getElementById('addToy').checked) total += 5;
+            if (document.getElementById('addSocks').checked) total += 5;
+
+            document.getElementById('totalPrice').innerText = total + ' €';
+        }
+    </script>
+</body>
+</html>
+
